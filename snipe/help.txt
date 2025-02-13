@@ -1,0 +1,57 @@
+
+ SNIPE (Signal-to-Noise Investigation of Pulsed Events)
+ ======================================================
+ This graphical interface allows users to:
+ - Load a filterbank file
+ - Dedisperse the data
+ - Manually remove RFI
+ - Average in time and frequency
+ - Calculate SNR using selected signal and noise regions
+ 
+ SNR Calculation
+ ===============
+ 1. Select the 'Signal' Region:
+    - Hover over the timeseries plot and press 's'.
+    - Click twice to mark the range where the signal is present.
+    - Only one signal region can be selected.
+ 
+ 2. Select the 'Noise' Region:
+    - Hover over the timeseries plot and press 'n'.
+    - Click twice to define the noise region.
+    - Multiple noise regions can be selected.
+ 
+ 3. Calculate SNR:
+    - Click the 'Calculate SNR' button or press 'c'.
+ 
+ 4. Reset Selections:
+    - Hover over the timeseries plot and press 'r' to reset.
+ 
+ RFI Zapping
+ ===========
+ 1. Remove Frequency Channels:
+    - Hover over the waterfall plot and press 'f'.
+    - Click twice to select the frequency range to remove.
+ 
+ 2. Remove Time Samples:
+    - Hover over the waterfall plot and press 't'.
+    - Click twice to select the time range to remove.
+ 
+ 3. Zap a Single Time Sample:
+    - Hover over the specific pixel in the waterfall plot.
+    - Press 'z' to remove it.
+    - You can also hold 'z' while moving the cursor 
+      to zap multiple pixels (can be a bit slow)
+ 
+ 4. Reset RFI Zapping:
+    - Press 'r' to restore all removed data.
+ 
+ Notes
+ =====
+ - Ensure you hover over the correct plot before making selections.
+ - Use 'r' to reset selections for both SNR calculation and RFI zapping.
+ - You can use the zoom in/out navigation tools freely
+ 
+ ==================================================
+ = Developed by: Wael Farah                       =
+ = Version: 1.0 | Contact: wael.a.farah@gmail.com =
+ ==================================================

@@ -1,0 +1,33 @@
+rc_params = {"figure.figsize": (12,10),
+             "xtick.major.size": 9,
+             "xtick.minor.size": 4,
+             "ytick.major.size": 9,
+             "ytick.minor.size": 4,
+             "xtick.major.width": 2,
+             "xtick.minor.width": 1,
+             "ytick.major.width": 2,
+             "ytick.minor.width": 1,
+             "xtick.major.pad": 8,
+             "xtick.minor.pad": 8,
+             "ytick.major.pad": 8,
+             "ytick.minor.pad": 8,
+             "lines.linewidth": 2,
+             "lines.markersize": 24,
+             "axes.linewidth": 2,
+             "axes.grid": True,
+             "axes.grid.axis": 'both',
+             "axes.grid.which": 'minor',
+             "legend.loc": "best",
+             "text.usetex": False,
+             "xtick.labelsize" : 20,
+             "ytick.labelsize" : 20,
+             "font.size": 24,
+             "font.family" : "Times New Roman",
+             "font.weight": "normal",
+             "xtick.direction": "in",
+             "ytick.direction": "in",
+             }
+import matplotlib
+matplotlib.rcParams.update(rc_params)
+import matplotlib.pyplot as plt
+plt.rcParams.update(rc_params)
