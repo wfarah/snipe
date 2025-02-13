@@ -20,9 +20,13 @@ exec(open(os.path.join(os.path.dirname(__file__),
 
 import matplotlib.gridspec as gridspec
 import matplotlib as mpl
+# remove the key binding that belong to matplotlib
 mpl.rcParams['keymap.save'].remove('s')
 mpl.rcParams['keymap.back'].remove('c')
 
+NORMAL_FONT = ("Helvetica", 16, "bold")
+NOBOLD_FONT = ("Helvetica", 16)
+TEXT_FONT   = ("Helvetica", 14, "bold")
 
 class ControlFrame(tk.Frame):
     def __init__(self, parent, start_sample=None,
@@ -40,83 +44,96 @@ class ControlFrame(tk.Frame):
         self.dm = tk.StringVar()
 
         # File Selection Button
-        tk.Button(self, text="Select File", 
+        tk.Button(self, text="Select File", font=NORMAL_FONT,
                   command=self.select_file).grid(row=0, column=0, columnspan=2, pady=5)
-        tk.Label(self, textvariable=self.file_path, 
+        tk.Label(self, textvariable=self.file_path, font=NORMAL_FONT,
                  wraplength=300, anchor="w").grid(row=1, column=0, columnspan=2)
 
         # Dropdown Menu to Select Read Mode
-        tk.Label(self, text="Read Mode:").grid(row=2, column=0)
+        tk.Label(self, text="Read Mode:", font=NORMAL_FONT).grid(
+                row=2, column=0)
         self.read_mode_menu = tk.OptionMenu(self, 
                                             self.read_mode, "Samples", "Time",
                                             command=self.toggle_input_fields)
+        self.read_mode_menu.config(font=NORMAL_FONT)
         self.read_mode_menu.grid(row=2, column=1, pady=20)
 
         # Numeric Validators
         self.register_numeric_input()
 
         # Sample Input Fields
-        self.start_sample_label = tk.Label(self, text="Start Sample:")
+        self.start_sample_label = tk.Label(self, text="Start Sample:",
+                                           font=NORMAL_FONT)
         self.start_sample_label.grid(row=3, column=0)
         self.start_sample_entry = tk.Entry(self,
                                            textvariable=self.start_sample,
-                                           validate="key", 
+                                           validate="key", font=NOBOLD_FONT,
                                            validatecommand=(self.vcmd, "%P"))
         self.start_sample_entry.grid(row=3, column=1)
 
-        self.num_samples_label = tk.Label(self, text="Number of Samples:")
+        self.num_samples_label = tk.Label(self, text="Number of Samples:",
+                                          font=NORMAL_FONT)
         self.num_samples_label.grid(row=4, column=0)
         self.num_samples_entry = tk.Entry(self, textvariable=self.num_samples,
                                           validate="key",
+                                          font=NOBOLD_FONT,
                                           validatecommand=(self.vcmd, "%P"))
         self.num_samples_entry.grid(row=4, column=1)
 
         # Time Input Fields (Initially Disabled)
-        self.start_time_label = tk.Label(self, text="Start Time (s):")
+        self.start_time_label = tk.Label(self, text="Start Time (s):",
+                                         font=NORMAL_FONT)
         self.start_time_label.grid(row=5, column=0)
         self.start_time_entry = tk.Entry(self, textvariable=self.start_time,
-                                         validate="key", 
+                                         validate="key", font=NOBOLD_FONT,
                                          validatecommand=(self.vcmd_float,
                                                           "%P"), 
                                          state="disabled")
         self.start_time_entry.grid(row=5, column=1)
 
-        self.total_time_label = tk.Label(self, text="Total Time (s):")
+        self.total_time_label = tk.Label(self, text="Total Time (s):",
+                                         font=NORMAL_FONT)
         self.total_time_label.grid(row=6, column=0)
         self.total_time_entry = tk.Entry(self, textvariable=self.total_time,
-                                         validate="key",
+                                         validate="key",font=NOBOLD_FONT,
                                          validatecommand=(self.vcmd_float, 
                                                           "%P"),
                                          state="disabled")
         self.total_time_entry.grid(row=6, column=1)
 
         # Dispersion Measure Input
-        tk.Label(self, text="DM (pc/cc):").grid(row=7, column=0)
-        tk.Entry(self, textvariable=self.dm, validate="key",
+        tk.Label(self, text="DM (pc/cc):",
+                 font=NORMAL_FONT).grid(row=7, column=0)
+        tk.Entry(self, textvariable=self.dm, validate="key", font=NOBOLD_FONT,
                  validatecommand=(self.vcmd_float, "%P")).grid(row=7, 
                                                                column=1)
 
         # Read File Button
-        tk.Button(self, text="Read Block", command=self.read_block).grid(
+        tk.Button(self, text="Read Block", command=self.read_block,
+                  font=NORMAL_FONT).grid(
                 row=8, column=0, columnspan=2, pady=10)
 
         # Fscrunch & Tscrunch Buttons
         self.fscrunch_button = tk.Button(self, text="Fscrunch", 
+                                         font=NORMAL_FONT,
                                          command=self.fscrunch)
         self.fscrunch_button.grid(row=9, column=0, pady=5)
 
         self.tscrunch_button = tk.Button(self, text="Tscrunch", 
+                                         font=NORMAL_FONT,
                                          command=self.tscrunch)
         self.tscrunch_button.grid(row=9, column=1, pady=5)
 
         # Calculate SNR Button
         self.snr_button = tk.Button(self, text="Calculate SNR", 
+                                    font=NORMAL_FONT,
                                     command=self.root._calculate_snr)
-        self.snr_button.grid(row=10, column=0, columnspan=2, pady=10)
+        self.snr_button.grid(row=10, column=0, columnspan=2, pady=100)
 
         self.help_button = tk.Button(self, text="Help",
+                                     font=NORMAL_FONT,
                                      command=self.root.show_help)
-        self.help_button.grid(row=11, column=0, columnspan=2, pady=10)
+        self.help_button.grid(row=11, column=0, columnspan=2, pady=0)
 
     def select_file(self):
         """Opens a file dialog and updates the file_path variable."""
@@ -464,7 +481,7 @@ class SNIPEApp(tk.Tk):
         """
         Handles key presses: 's' for signal, 'm' for noise, 'r' to reset,
         'c' for snr calculation, 'f', 't' and 'z' for RFI cleaning, 
-        'h' for help
+        'h' for help, 'q' to quit
         """
         if event.key == "s" and event.inaxes == self.ax_ts:
             print("Select signal region: Click twice")
@@ -506,10 +523,14 @@ class SNIPEApp(tk.Tk):
 
         elif event.key == "c":
             snr = self._calculate_snr()
-            print(f"SNR: {snr:.2f}")
+            if snr:
+                print(f"SNR: {snr:.2f}")
 
         elif event.key == "h":
             self.show_help()
+
+        elif event.key == "q":
+            self.on_close()
 
 
     def show_help(self):
@@ -522,7 +543,8 @@ class SNIPEApp(tk.Tk):
         help_text = open(os.path.join(os.path.dirname(__file__), 
                                  "help.txt"), encoding="utf-8").read()
 
-        text_widget = tk.Text(help_window, wrap="word", height=10, width=60)
+        text_widget = tk.Text(help_window, wrap="word", height=10, width=60,
+                              font=TEXT_FONT)
         text_widget.insert("1.0", help_text)
         text_widget.config(state="disabled")  # Make it read-only
         text_widget.pack(padx=10, pady=10, fill="both", expand=True)

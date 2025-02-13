@@ -49,9 +49,10 @@
  =====
  - Ensure you hover over the correct plot before making selections.
  - Use 'r' to reset selections for both SNR calculation and RFI zapping.
+ - Use 'q' to quite application
  - You can use the zoom in/out navigation tools freely
  
- ==================================================
- = Developed by: Wael Farah                       =
- = Version: 1.0 | Contact: wael.a.farah@gmail.com =
- ==================================================
+ ===========================================================
+   Developed by: Wael Farah
+   Version: 1.0 | Contact: wael.a.farah@gmail.com
+ ===========================================================
