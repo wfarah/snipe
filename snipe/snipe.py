@@ -285,6 +285,9 @@ class SNIPEApp(tk.Tk):
         super().__init__()
         self.title("SNIPE –– Signal-to-Noise Investigation of Pulsed Events")
 
+        # Override window close button (X)
+        self.protocol("WM_DELETE_WINDOW", self.on_close)
+
         # Initialize waterfall to something fun :)
         self.wfall = text_to_matrix("SNIPE", 40, 60).astype(np.float64)
         # Take a copy that we can fall back to when resetting
@@ -355,6 +358,11 @@ class SNIPEApp(tk.Tk):
         # Initialize left-hand-side control
         self.control_frame = ControlFrame(self)
         self.control_frame.grid(row=0, column=1, padx=10, pady=10, sticky="n")
+
+    def on_close(self):
+        """Properly closes the application."""
+        self.destroy()  # Destroys the main window
+        self.quit()  # Ensures event loop exits
 
 
     def update_plots(self, init=False):
@@ -632,6 +640,7 @@ class SNIPEApp(tk.Tk):
 
         self.redraw_textbox()
         return snr
+
 
 def main():
     app = SNIPEApp()
