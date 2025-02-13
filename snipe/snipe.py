@@ -537,7 +537,7 @@ class SNIPEApp(tk.Tk):
         """Creates a help popup."""
         help_window = tk.Toplevel()
         help_window.title("Help")
-        help_window.geometry("550x780")  # Set window size (Width x Height)
+        help_window.geometry("600x780")  # Set window size (Width x Height)
 
         # Load help text from package
         help_text = open(os.path.join(os.path.dirname(__file__), 

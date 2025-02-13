@@ -52,7 +52,7 @@
  - Use 'q' to quite application
  - You can use the zoom in/out navigation tools freely
  
- ===========================================================
+ =======================================================
    Developed by: Wael Farah
    Version: 1.0 | Contact: wael.a.farah@gmail.com
- ===========================================================
+ =======================================================
