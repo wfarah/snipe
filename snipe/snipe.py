@@ -130,10 +130,17 @@ class ControlFrame(tk.Frame):
                                     command=self.root._calculate_snr)
         self.snr_button.grid(row=10, column=0, columnspan=2, pady=100)
 
+        # Save .npz format
+        self.help_button = tk.Button(self, text="Save npz",
+                                     font=NORMAL_FONT,
+                                     command=self.root.save_npz)
+        self.help_button.grid(row=11, column=0, columnspan=2, pady=0)
+
+        # Show help
         self.help_button = tk.Button(self, text="Help",
                                      font=NORMAL_FONT,
                                      command=self.root.show_help)
-        self.help_button.grid(row=11, column=0, columnspan=2, pady=0)
+        self.help_button.grid(row=12, column=0, columnspan=2, pady=0)
 
     def select_file(self):
         """Opens a file dialog and updates the file_path variable."""
@@ -199,6 +206,7 @@ class ControlFrame(tk.Frame):
                         if self.total_time.get() else None
 
             dm = float(self.dm.get()) if self.dm.get() else None
+            self.root.dm = dm
 
         
         except ValueError:
@@ -278,7 +286,9 @@ class ControlFrame(tk.Frame):
         self.root.wfall = tmp_reshape.sum(axis=1)
         self.root.chan_freqs = tmp_chan_freqs.reshape(
                 tmp_chan_freqs.shape[0]//2, -1).mean(axis=1)
+        self.root.foff *= 2
         self.root.update_plots(init=True)
+
 
     def tscrunch(self):
         """ Average waterfall in time """
@@ -294,6 +304,7 @@ class ControlFrame(tk.Frame):
         self.root.wfall = tmp_reshape.sum(axis=2)
         self.root.time_vals = tmp_time_vals.reshape(
                 tmp_time_vals.shape[0]//2, -1).mean(axis=1)
+        self.root.tsamp *= 2
         self.root.update_plots(init=True)
 
 
@@ -301,6 +312,18 @@ class SNIPEApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         super().__init__()
         self.title("SNIPE –– Signal-to-Noise Investigation of Pulsed Events")
+
+        screen_width  = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+
+        # Set the window size to a percentage of the screen
+        window_width = int(screen_width * 0.7)  # 70% of the screen width
+        window_height = int(screen_height * 0.7)  # 70% of the screen height
+
+        #self.geometry("10x10")
+        self.geometry(f"{window_width}x{window_height}")
+        #self.tk.call('tk', 'scaling', 1.8)  # Adjust this factor if needed
+        self.resizable(True, True)
 
         # Override window close button (X)
         self.protocol("WM_DELETE_WINDOW", self.on_close)
@@ -321,6 +344,8 @@ class SNIPEApp(tk.Tk):
         # Some random values for now
         self.foff       = self.chan_freqs[0] - self.chan_freqs[1]
         self.tsamp      = 64e-3
+
+        self.dm = 0
 
         self.fname = "SNIPE.fil"
         self.source_name = "snipe"
@@ -351,7 +376,7 @@ class SNIPEApp(tk.Tk):
         # Embed Matplotlib Figure into Tkinter
         self.canvas = FigureCanvasTkAgg(self.fig, master=self)
         self.canvas.get_tk_widget().grid(row=0, column=0, rowspan=4, 
-                                         padx=2, pady=2)
+                                         padx=2, pady=2, sticky="nsew")
         
         # Add Navigation Toolbar
         self.navigation = NavigationToolbar2Tk(self.canvas, self, 
@@ -375,6 +400,9 @@ class SNIPEApp(tk.Tk):
         # Initialize left-hand-side control
         self.control_frame = ControlFrame(self)
         self.control_frame.grid(row=0, column=1, padx=10, pady=10, sticky="n")
+
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
     def on_close(self):
         """Properly closes the application."""
@@ -537,7 +565,7 @@ class SNIPEApp(tk.Tk):
         """Creates a help popup."""
         help_window = tk.Toplevel()
         help_window.title("Help")
-        help_window.geometry("600x780")  # Set window size (Width x Height)
+        help_window.geometry("650x780")  # Set window size (Width x Height)
 
         # Load help text from package
         help_text = open(os.path.join(os.path.dirname(__file__), 
@@ -633,6 +661,36 @@ class SNIPEApp(tk.Tk):
         self.update_plots()
         self.clicks = []
         self.mode = None
+
+    def save_npz(self):
+        dt = np.mean(np.abs(self.time_vals[1:] -\
+                self.time_vals[-1:]))
+        dfs = np.mean(self.chan_freqs[1:] - self.chan_freqs[:-1])
+        dm = self.dm
+        bandwidth = np.abs(self.chan_freqs[0] - self.chan_freqs[-1])
+        duration = self.time_vals[-1]
+        center_f = np.mean(self.chan_freqs)
+        
+        print(dt, dfs, dm, bandwidth, duration, center_f)
+        """
+        burstmetadata = {
+            ### required fields:
+            'dt'        : time_axis_trimmed_seconds,                       # array of time axis -> actually tsamp?
+            'dfs'       : np.float64(downsampled_freq_axis),                   # array of frequency channels in MHz
+            'DM'        : best_dm,                              # float of dispersion measure (DM)
+            'bandwidth' : bandwidth,                               # float of bandwidth in MHz
+            'duration'  : high_time,                               # file duration in seconds
+            'center_f'  : center_f,                      # burst frequency in MHz, unused, optional,
+            ### optional fields:
+            'freq_unit' : 'MHz',                                   # string of freqeuncy unit, e.g. 'MHz', optional,
+            'time_unit' : 's',                                     # string of time unit, e.g. 'ms', optional,
+            'int_unit'  : 'Arb',                                   # string of intensity unit, e.g. 'Jy', optional,
+            'telescope' : 'ATA',                                   # string of observing telescope, e.g. 'Arecibo', optional,
+            #'burstSN'   :  19.76,                                  # float of signal to noise ratio, optional,
+            'tbin'      : downsampled_tsamp,                        # float of time resolution, unused, optional
+            'raw_shape' : np.shape(wfall)
+        }
+        """
 
 
     def _calculate_snr(self):
