@@ -24,9 +24,6 @@ import matplotlib as mpl
 mpl.rcParams['keymap.save'].remove('s')
 mpl.rcParams['keymap.back'].remove('c')
 
-NORMAL_FONT = ("Helvetica", 16, "bold")
-NOBOLD_FONT = ("Helvetica", 16)
-TEXT_FONT   = ("Helvetica", 14, "bold")
 
 class ControlFrame(tk.Frame):
     def __init__(self, parent, start_sample=None,
@@ -307,7 +304,6 @@ class ControlFrame(tk.Frame):
         self.root.tsamp *= 2
         self.root.update_plots(init=True)
 
-
 class SNIPEApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -322,8 +318,23 @@ class SNIPEApp(tk.Tk):
 
         #self.geometry("10x10")
         self.geometry(f"{window_width}x{window_height}")
-        #self.tk.call('tk', 'scaling', 1.8)  # Adjust this factor if needed
         self.resizable(True, True)
+
+        # Normalize for different screens
+        dpi_scaling = self.winfo_fpixels('1i') / 72
+
+        base_normal, base_text = 14, 12
+        normal_size = max(10, int(base_normal * dpi_scaling))
+        text_size   = max(8, int(base_text * dpi_scaling))
+
+        global NORMAL_FONT
+        global NOBOLD_FONT
+        global TEXT_FONT
+        NORMAL_FONT = ("Helvetica", normal_size, "bold")
+        NOBOLD_FONT = ("Helvetica", normal_size)
+        TEXT_FONT   = ("Helvetica", text_size, "bold")
+
+        print(NORMAL_FONT, NOBOLD_FONT, TEXT_FONT)
 
         # Override window close button (X)
         self.protocol("WM_DELETE_WINDOW", self.on_close)
@@ -403,6 +414,8 @@ class SNIPEApp(tk.Tk):
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
+
+        self.tk.call('tk', 'scaling', 0.5)  # Adjust this factor if needed
 
     def on_close(self):
         """Properly closes the application."""
@@ -672,6 +685,7 @@ class SNIPEApp(tk.Tk):
         center_f = np.mean(self.chan_freqs)
         
         print(dt, dfs, dm, bandwidth, duration, center_f)
+        print("NOT IMPLEMENTED YET")
         """
         burstmetadata = {
             ### required fields:
