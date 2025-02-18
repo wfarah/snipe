@@ -43,7 +43,7 @@ class ControlFrame(tk.Frame):
         # File Selection Button
         tk.Button(self, text="Select File", font=NORMAL_FONT,
                   command=self.select_file).grid(row=0, column=0, columnspan=2, pady=5)
-        tk.Label(self, textvariable=self.file_path, font=NORMAL_FONT,
+        tk.Label(self, textvariable=self.file_path, font=NOBOLD_FONT,
                  wraplength=300, anchor="w").grid(row=1, column=0, columnspan=2)
 
         # Dropdown Menu to Select Read Mode
@@ -65,16 +65,18 @@ class ControlFrame(tk.Frame):
         self.start_sample_entry = tk.Entry(self,
                                            textvariable=self.start_sample,
                                            validate="key", font=NOBOLD_FONT,
-                                           validatecommand=(self.vcmd, "%P"))
+                                           validatecommand=(self.vcmd, "%P"),
+                                           width=10)
         self.start_sample_entry.grid(row=3, column=1)
 
-        self.num_samples_label = tk.Label(self, text="Number of Samples:",
+        self.num_samples_label = tk.Label(self, text="Total samples:",
                                           font=NORMAL_FONT)
         self.num_samples_label.grid(row=4, column=0)
         self.num_samples_entry = tk.Entry(self, textvariable=self.num_samples,
                                           validate="key",
                                           font=NOBOLD_FONT,
-                                          validatecommand=(self.vcmd, "%P"))
+                                          validatecommand=(self.vcmd, "%P"),
+                                          width=10)
         self.num_samples_entry.grid(row=4, column=1)
 
         # Time Input Fields (Initially Disabled)
@@ -85,7 +87,7 @@ class ControlFrame(tk.Frame):
                                          validate="key", font=NOBOLD_FONT,
                                          validatecommand=(self.vcmd_float,
                                                           "%P"), 
-                                         state="disabled")
+                                         state="disabled", width=10)
         self.start_time_entry.grid(row=5, column=1)
 
         self.total_time_label = tk.Label(self, text="Total Time (s):",
@@ -95,14 +97,14 @@ class ControlFrame(tk.Frame):
                                          validate="key",font=NOBOLD_FONT,
                                          validatecommand=(self.vcmd_float, 
                                                           "%P"),
-                                         state="disabled")
+                                         state="disabled", width=10)
         self.total_time_entry.grid(row=6, column=1)
 
         # Dispersion Measure Input
         tk.Label(self, text="DM (pc/cc):",
                  font=NORMAL_FONT).grid(row=7, column=0)
         tk.Entry(self, textvariable=self.dm, validate="key", font=NOBOLD_FONT,
-                 validatecommand=(self.vcmd_float, "%P")).grid(row=7, 
+                 validatecommand=(self.vcmd_float, "%P"), width=10).grid(row=7, 
                                                                column=1)
 
         # Read File Button
@@ -125,7 +127,7 @@ class ControlFrame(tk.Frame):
         self.snr_button = tk.Button(self, text="Calculate SNR", 
                                     font=NORMAL_FONT,
                                     command=self.root._calculate_snr)
-        self.snr_button.grid(row=10, column=0, columnspan=2, pady=100)
+        self.snr_button.grid(row=10, column=0, columnspan=2, pady=60)
 
         # Save .npz format
         self.help_button = tk.Button(self, text="Save npz",
@@ -323,7 +325,7 @@ class SNIPEApp(tk.Tk):
         # Normalize for different screens
         dpi_scaling = self.winfo_fpixels('1i') / 72
 
-        base_normal, base_text = 16, 12
+        base_normal, base_text = 16, 10
         normal_size = max(10, int(base_normal * dpi_scaling))
         text_size   = max(8, int(base_text * dpi_scaling))
 
