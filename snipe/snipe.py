@@ -323,7 +323,7 @@ class SNIPEApp(tk.Tk):
         # Normalize for different screens
         dpi_scaling = self.winfo_fpixels('1i') / 72
 
-        base_normal, base_text = 14, 12
+        base_normal, base_text = 16, 12
         normal_size = max(10, int(base_normal * dpi_scaling))
         text_size   = max(8, int(base_text * dpi_scaling))
 
@@ -335,6 +335,12 @@ class SNIPEApp(tk.Tk):
         TEXT_FONT   = ("Helvetica", text_size, "bold")
 
         print(NORMAL_FONT, NOBOLD_FONT, TEXT_FONT)
+
+        # Overwrite some RC params
+        matplotlib.rc('font', size=normal_size)
+        matplotlib.rc('axes', titlesize=normal_size)
+        matplotlib.rc('xtick', labelsize=normal_size)
+        matplotlib.rc('ytick', labelsize=normal_size)
 
         # Override window close button (X)
         self.protocol("WM_DELETE_WINDOW", self.on_close)
@@ -507,7 +513,8 @@ class SNIPEApp(tk.Tk):
 
         # initialization
         if not self.text:
-            self.text = self.ax_text.text(0.5, 0.9, text, fontsize=11, 
+            self.text = self.ax_text.text(0.5, 0.9, text,
+                              fontsize=TEXT_FONT[1],
                               color="red", fontweight="bold",
                     bbox=dict(facecolor="white", edgecolor="red", 
                               boxstyle="round,pad=0.5"),
