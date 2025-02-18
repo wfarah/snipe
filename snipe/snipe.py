@@ -334,6 +334,7 @@ class SNIPEApp(tk.Tk):
         NOBOLD_FONT = ("Helvetica", normal_size)
         TEXT_FONT   = ("Helvetica", text_size, "bold")
 
+        print(self.winfo_fpixels('1i'))
         print(NORMAL_FONT, NOBOLD_FONT, TEXT_FONT)
 
         # Overwrite some RC params
@@ -341,6 +342,7 @@ class SNIPEApp(tk.Tk):
         matplotlib.rc('axes', titlesize=normal_size)
         matplotlib.rc('xtick', labelsize=normal_size)
         matplotlib.rc('ytick', labelsize=normal_size)
+        matplotlib.rcParams['figure.dpi'] = dpi_scaling * 100
 
         # Override window close button (X)
         self.protocol("WM_DELETE_WINDOW", self.on_close)
