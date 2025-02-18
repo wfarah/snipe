@@ -321,7 +321,7 @@ class SNIPEApp(tk.Tk):
         self.resizable(True, True)
 
         # Normalize for different screens
-        dpi_scaling = self.winfo_fpixels('1i') / 72
+        dpi_scaling = max(72, self.winfo_fpixels('1i') / 72)
 
         base_normal, base_text = 16, 12
         normal_size = max(10, int(base_normal * dpi_scaling))
