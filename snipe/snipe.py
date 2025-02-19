@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
+import matplotlib
 
 from snipe.utils import normalize, findNearest, calculate_snr, text_to_matrix
 
@@ -340,11 +341,11 @@ class SNIPEApp(tk.Tk):
         print(NORMAL_FONT, NOBOLD_FONT, TEXT_FONT)
 
         # Overwrite some RC params
-        matplotlib.rc('font', size=normal_size)
-        matplotlib.rc('axes', titlesize=normal_size)
-        matplotlib.rc('xtick', labelsize=normal_size)
-        matplotlib.rc('ytick', labelsize=normal_size)
-        matplotlib.rcParams['figure.dpi'] = dpi_scaling * 100
+        matplotlib.rc('font', size=text_size)
+        matplotlib.rc('axes', titlesize=text_size)
+        matplotlib.rc('xtick', labelsize=text_size)
+        matplotlib.rc('ytick', labelsize=text_size)
+        #matplotlib.rcParams['figure.dpi'] = dpi_scaling * 100
 
         # Override window close button (X)
         self.protocol("WM_DELETE_WINDOW", self.on_close)
@@ -687,24 +688,25 @@ class SNIPEApp(tk.Tk):
         self.mode = None
 
     def save_npz(self):
-        dt = np.mean(np.abs(self.time_vals[1:] -\
-                self.time_vals[-1:]))
-        dfs = np.mean(self.chan_freqs[1:] - self.chan_freqs[:-1])
+        dt = self.time_vals * 1e-3
+        dfs = self.chan_freqs
         dm = self.dm
         bandwidth = np.abs(self.chan_freqs[0] - self.chan_freqs[-1])
-        duration = self.time_vals[-1]
+        duration = self.time_vals[-1] * 1e-3
         center_f = np.mean(self.chan_freqs)
         
         print(dt, dfs, dm, bandwidth, duration, center_f)
         print("NOT IMPLEMENTED YET")
-        """
+
+        wfall = np.array(self.wfall)
+
         burstmetadata = {
             ### required fields:
-            'dt'        : time_axis_trimmed_seconds,                       # array of time axis -> actually tsamp?
-            'dfs'       : np.float64(downsampled_freq_axis),                   # array of frequency channels in MHz
-            'DM'        : best_dm,                              # float of dispersion measure (DM)
+            'dt'        : dt,                       # array of time axis -> actually tsamp?
+            'dfs'       : dfs,                   # array of frequency channels in MHz
+            'DM'        : dm,                              # float of dispersion measure (DM)
             'bandwidth' : bandwidth,                               # float of bandwidth in MHz
-            'duration'  : high_time,                               # file duration in seconds
+            'duration'  : duration,                               # file duration in seconds
             'center_f'  : center_f,                      # burst frequency in MHz, unused, optional,
             ### optional fields:
             'freq_unit' : 'MHz',                                   # string of freqeuncy unit, e.g. 'MHz', optional,
@@ -712,10 +714,11 @@ class SNIPEApp(tk.Tk):
             'int_unit'  : 'Arb',                                   # string of intensity unit, e.g. 'Jy', optional,
             'telescope' : 'ATA',                                   # string of observing telescope, e.g. 'Arecibo', optional,
             #'burstSN'   :  19.76,                                  # float of signal to noise ratio, optional,
-            'tbin'      : downsampled_tsamp,                        # float of time resolution, unused, optional
+            'tbin'      : self.tsamp,                        # float of time resolution, unused, optional
             'raw_shape' : np.shape(wfall)
         }
-        """
+        print(burstmetadata)
+        np.savez("./tmp.npz", wfall=wfall, **burstmetadata)
 
 
     def _calculate_snr(self):
