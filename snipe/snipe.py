@@ -149,6 +149,7 @@ class ControlFrame(tk.Frame):
                 filetypes=[("Filterbank files", ".fil")])
         if file_path:
             self.file_path.set(file_path)
+        self.root.filename = file_path
 
     def register_numeric_input(self):
         """Registers validation for numeric input fields."""
@@ -717,8 +718,9 @@ class SNIPEApp(tk.Tk):
             'tbin'      : self.tsamp,                        # float of time resolution, unused, optional
             'raw_shape' : np.shape(wfall)
         }
-        print(burstmetadata)
-        np.savez("./tmp.npz", wfall=wfall, **burstmetadata)
+        if self.filename:
+            npz_name = os.path.splitext(self.filename)[0] + '.npz'
+            np.savez(npz_name, wfall=wfall, **burstmetadata)
 
 
     def _calculate_snr(self):
