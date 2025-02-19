@@ -239,8 +239,11 @@ class ControlFrame(tk.Frame):
                 self.root.chan_freqs = self.filfile.header.chan_freqs
 
             # frequency and time resolution
-            self.root.foff = self.filfile.header.foff #MHz
+            self.root.foff = np.abs(self.filfile.header.foff) #MHz
             self.root.tsamp = self.filfile.header.tsamp * 1e3 #ms
+
+            self.root.foff_orig  = self.root.foff
+            self.root.tsamp_orig = self.root.tsamp
 
             self.root.wfall = block
             self.root.orig_wfall = self.root.wfall.copy()
@@ -367,6 +370,10 @@ class SNIPEApp(tk.Tk):
         # Some random values for now
         self.foff       = self.chan_freqs[0] - self.chan_freqs[1]
         self.tsamp      = 64e-3
+
+        # These are the original values
+        self.foff_orig  = self.foff
+        self.tsamp_orig = self.tsamp
 
         self.dm = 0
 
@@ -558,6 +565,8 @@ class SNIPEApp(tk.Tk):
             self.wfall = self.orig_wfall.copy()
             self.time_vals = self.time_vals_orig.copy()
             self.chan_freqs = self.chan_freqs_orig.copy()
+            self.foff       = self.foff_orig
+            self.tsamp      = self.tsamp_orig
             self.update_plots(init=True)
 
         elif event.key == "f" and event.inaxes == self.ax_wfall:
