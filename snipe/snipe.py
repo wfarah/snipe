@@ -47,14 +47,22 @@ class ControlFrame(tk.Frame):
         tk.Label(self, textvariable=self.file_path, font=NOBOLD_FONT,
                  wraplength=300, anchor="w").grid(row=1, column=0, columnspan=2)
 
+        tk.Label(self, text="Preprocessing", font=NORMAL_FONT).grid(
+                row=2, column=0)
+
+        # Select whether to do enable or diable preprocessing
+        self.root.preproc = tk.BooleanVar(value=True)
+        tk.Checkbutton(self, variable=self.root.preproc).grid(row=2, column=1, pady=20)
+
+
         # Dropdown Menu to Select Read Mode
         tk.Label(self, text="Read Mode:", font=NORMAL_FONT).grid(
-                row=2, column=0)
+                row=3, column=0)
         self.read_mode_menu = tk.OptionMenu(self, 
                                             self.read_mode, "Samples", "Time",
                                             command=self.toggle_input_fields)
         self.read_mode_menu.config(font=NORMAL_FONT)
-        self.read_mode_menu.grid(row=2, column=1, pady=20)
+        self.read_mode_menu.grid(row=3, column=1)
 
         # Numeric Validators
         self.register_numeric_input()
@@ -62,85 +70,85 @@ class ControlFrame(tk.Frame):
         # Sample Input Fields
         self.start_sample_label = tk.Label(self, text="Start Sample:",
                                            font=NORMAL_FONT)
-        self.start_sample_label.grid(row=3, column=0)
+        self.start_sample_label.grid(row=4, column=0)
         self.start_sample_entry = tk.Entry(self,
                                            textvariable=self.start_sample,
                                            validate="key", font=NOBOLD_FONT,
                                            validatecommand=(self.vcmd, "%P"),
                                            width=10)
-        self.start_sample_entry.grid(row=3, column=1)
+        self.start_sample_entry.grid(row=4, column=1)
 
         self.num_samples_label = tk.Label(self, text="Total samples:",
                                           font=NORMAL_FONT)
-        self.num_samples_label.grid(row=4, column=0)
+        self.num_samples_label.grid(row=5, column=0)
         self.num_samples_entry = tk.Entry(self, textvariable=self.num_samples,
                                           validate="key",
                                           font=NOBOLD_FONT,
                                           validatecommand=(self.vcmd, "%P"),
                                           width=10)
-        self.num_samples_entry.grid(row=4, column=1)
+        self.num_samples_entry.grid(row=5, column=1)
 
         # Time Input Fields (Initially Disabled)
         self.start_time_label = tk.Label(self, text="Start Time (s):",
                                          font=NORMAL_FONT)
-        self.start_time_label.grid(row=5, column=0)
+        self.start_time_label.grid(row=6, column=0)
         self.start_time_entry = tk.Entry(self, textvariable=self.start_time,
                                          validate="key", font=NOBOLD_FONT,
                                          validatecommand=(self.vcmd_float,
                                                           "%P"), 
                                          state="disabled", width=10)
-        self.start_time_entry.grid(row=5, column=1)
+        self.start_time_entry.grid(row=6, column=1)
 
         self.total_time_label = tk.Label(self, text="Total Time (s):",
                                          font=NORMAL_FONT)
-        self.total_time_label.grid(row=6, column=0)
+        self.total_time_label.grid(row=7, column=0)
         self.total_time_entry = tk.Entry(self, textvariable=self.total_time,
                                          validate="key",font=NOBOLD_FONT,
                                          validatecommand=(self.vcmd_float, 
                                                           "%P"),
                                          state="disabled", width=10)
-        self.total_time_entry.grid(row=6, column=1)
+        self.total_time_entry.grid(row=7, column=1)
 
         # Dispersion Measure Input
         tk.Label(self, text="DM (pc/cc):",
-                 font=NORMAL_FONT).grid(row=7, column=0)
+                 font=NORMAL_FONT).grid(row=8, column=0)
         tk.Entry(self, textvariable=self.dm, validate="key", font=NOBOLD_FONT,
-                 validatecommand=(self.vcmd_float, "%P"), width=10).grid(row=7, 
+                 validatecommand=(self.vcmd_float, "%P"), width=10).grid(row=8, 
                                                                column=1)
 
         # Read File Button
         tk.Button(self, text="Read Block", command=self.read_block,
                   font=NORMAL_FONT).grid(
-                row=8, column=0, columnspan=2, pady=10)
+                row=9, column=0, columnspan=2, pady=10)
 
         # Fscrunch & Tscrunch Buttons
         self.fscrunch_button = tk.Button(self, text="Fscrunch", 
                                          font=NORMAL_FONT,
                                          command=self.fscrunch)
-        self.fscrunch_button.grid(row=9, column=0, pady=5)
+        self.fscrunch_button.grid(row=10, column=0, pady=5)
 
         self.tscrunch_button = tk.Button(self, text="Tscrunch", 
                                          font=NORMAL_FONT,
                                          command=self.tscrunch)
-        self.tscrunch_button.grid(row=9, column=1, pady=5)
+        self.tscrunch_button.grid(row=10, column=1, pady=5)
 
         # Calculate SNR Button
         self.snr_button = tk.Button(self, text="Calculate SNR", 
                                     font=NORMAL_FONT,
                                     command=self.root._calculate_snr)
-        self.snr_button.grid(row=10, column=0, columnspan=2, pady=60)
+        self.snr_button.grid(row=11, column=0, columnspan=2, pady=60)
 
         # Save .npz format
         self.help_button = tk.Button(self, text="Save npz",
                                      font=NORMAL_FONT,
                                      command=self.root.save_npz)
-        self.help_button.grid(row=11, column=0, columnspan=2, pady=0)
+        self.help_button.grid(row=12, column=0, columnspan=2, pady=0)
 
         # Show help
         self.help_button = tk.Button(self, text="Help",
                                      font=NORMAL_FONT,
                                      command=self.root.show_help)
-        self.help_button.grid(row=12, column=0, columnspan=2, pady=0)
+        self.help_button.grid(row=13, column=0, columnspan=2, pady=0)
 
     def select_file(self):
         """Opens a file dialog and updates the file_path variable."""
@@ -245,7 +253,10 @@ class ControlFrame(tk.Frame):
             self.root.foff_orig  = self.root.foff
             self.root.tsamp_orig = self.root.tsamp
 
-            self.root.wfall = block
+            if self.root.preproc.get():
+                self.root.wfall = block / np.mean(block, axis=1)[:, np.newaxis]
+            else:
+                self.root.wfall = block
             self.root.orig_wfall = self.root.wfall.copy()
 
             # time-axis
@@ -486,7 +497,7 @@ class SNIPEApp(tk.Tk):
                                  top=False, labelbottom=False)
 
         # plot bandpass
-        self.bp = np.sum(self.wfall, axis=1)
+        self.bp = np.std(self.wfall, axis=1)
         self.ax_bp.plot(self.bp, self.chan_freqs,
                         linestyle="-")
         self.ax_bp.set_title("Bandpass")
