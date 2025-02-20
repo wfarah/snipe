@@ -530,7 +530,7 @@ class SNIPEApp(tk.Tk):
         w = self.width * self.tsamp
 
         # this is the text that gets displayed on the top right
-        text = f"{self.fname}\nSource: {self.source_name}\n"\
+        text = f"Source: {self.source_name}\n"\
                 f"{self.foff:.2f} MHz; {tsamp_us:.2f} us\n\n"\
                 f"S/N: {self.snr:.2f}\n"\
                 f"width: {self.width} samp [{w:.2f} ms]"
