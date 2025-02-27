@@ -26,6 +26,36 @@ mpl.rcParams['keymap.save'].remove('s')
 mpl.rcParams['keymap.back'].remove('c')
 
 
+def extend_trues(arr_i, factor=10):
+    """
+    extend the True values in arr such that their length
+    is divisible by factor
+    """
+    arr = arr_i.copy() # make copy of initial array
+    true_indices = np.where(arr)[0]  # Get indices of True values
+    num_trues = len(true_indices)  # Count the number of True values
+
+    if num_trues % factor == 0:
+        return arr  # Already divisible by 10, no need to modify
+
+    extra_needed = factor - (num_trues % factor)  # How many more we need
+    start, end = true_indices[0], true_indices[-1]  # Boundaries of True region
+
+    # Candidates for extension
+    left_candidates = np.arange(start - 1, -1, -1)[arr[:start] == False]
+    right_candidates = np.arange(end + 1, len(arr))[arr[end + 1:] == False]
+
+    # Distribute expansion evenly
+    left_expansion = extra_needed // 2
+    right_expansion = extra_needed - left_expansion  # Ensure total adds up
+
+    # Apply expansion
+    arr[left_candidates[:left_expansion]] = True
+    arr[right_candidates[:right_expansion]] = True
+
+    return arr
+
+
 class ControlFrame(tk.Frame):
     def __init__(self, parent, start_sample=None,
                  num_samples=None, dm=None, file_path=None):
@@ -717,18 +747,37 @@ class SNIPEApp(tk.Tk):
         self.mode = None
 
     def save_npz(self):
-        dt = self.time_vals * 1e-3
+        """
+        Save selected (zoomed in) version of the waterfall plot
+        into an FRB-GUI compatible .npz file
+        """
+        # get time zoom regions
+        xlim_wfall = self.ax_wfall.get_xlim()
+
+        # calculate time mask
+        time_mask = (self.time_vals >= xlim_wfall[0])\
+                & (self.time_vals <= xlim_wfall[1])
+
+        # make time_mask divisible by a "nice" factor or 10
+        # might make FRB_GUI deal with these files better
+        time_mask = extend_trues(time_mask) 
+        
+        # apply time mask to dt
+        dt = self.time_vals[time_mask] * 1e-3 #to seconds
+        dt -= np.min(dt)
+
+        # apply time mask to wfall
+        wfall = np.array(self.wfall)[:, time_mask]
+        print(f"Saving npz file with wfall shape: {wfall.shape}")
+
+        # get the rest of the metadata
         dfs = self.chan_freqs
         dm = self.dm
-        bandwidth = np.abs(self.chan_freqs[0] - self.chan_freqs[-1])
-        duration = self.time_vals[-1] * 1e-3
+        bandwidth = np.abs(self.chan_freqs[0] - self.chan_freqs[-1]) +\
+                np.abs(self.chan_freqs[0] - self.chan_freqs[1])
+        duration = dt[-1]
         center_f = np.mean(self.chan_freqs)
         
-        print(dt, dfs, dm, bandwidth, duration, center_f)
-        print("NOT IMPLEMENTED YET")
-
-        wfall = np.array(self.wfall)
-
         burstmetadata = {
             ### required fields:
             'dt'        : dt,                       # array of time axis -> actually tsamp?
@@ -748,6 +797,9 @@ class SNIPEApp(tk.Tk):
         }
         if self.filename:
             npz_name = os.path.splitext(self.filename)[0] + '.npz'
+            print(f"Saving to path: {npz_name}")
+            if os.path.exists(npz_name):
+                print("WARNING: Overwritting file")
             np.savez(npz_name, wfall=wfall, **burstmetadata)
 
 
@@ -775,6 +827,8 @@ class SNIPEApp(tk.Tk):
         self.snr = snr
         # width of pulse in samples
         self.width = len(signal)
+
+        print(f"Calculated SNR: {snr}")
 
         self.redraw_textbox()
         return snr

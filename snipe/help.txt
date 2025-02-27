@@ -7,6 +7,7 @@
  - Manually remove RFI
  - Average in time and frequency
  - Calculate SNR using selected signal and noise regions
+ - Save selected region as '.npz' file for use with FRBGUI
  
  SNR Calculation
  ===============
