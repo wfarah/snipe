@@ -6,6 +6,7 @@
  - Manually remove RFI
  - Average in time and frequency
  - Calculate SNR using selected signal and noise regions
+ - Save waterfall regions as '.npz' files for use with FRBGUI
 
 <img width="1338" alt="Screenshot 2025-02-13 at 10 07 04 AM" src="https://github.com/user-attachments/assets/0664255b-f791-40e0-a2df-56a924fa730f" />
 
