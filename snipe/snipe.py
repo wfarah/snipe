@@ -432,6 +432,7 @@ class SNIPEApp(tk.Tk):
         # State variables for interaction when RFI zapping
         self.mode = None  # "signal", "noise", or None
         self.signal_lines = []
+        self.signal_fill = None
         self.noise_lines = []
         self.clicks = []
 
@@ -642,12 +643,19 @@ class SNIPEApp(tk.Tk):
                 # only allow 1 signal fill
                 if self.mode == "signal" and len(self.signal_lines) != 0:
                     self.signal_lines.clear()
-                    self.update_plots()
+                    #self.update_plots()
+                    self.signal_fill.remove()
+                    self.signal_fill = None
 
                 # fill area
                 y1,y2 = self.ax_ts.get_ylim()
                 fill = self.ax_ts.fill_betweenx([y1, y2], x1, x2, 
                                                   color=color, alpha=0.3)
+
+                # store the signal fill in case we want to remove it
+                # in the future
+                if self.mode == "signal":
+                    self.signal_fill = fill
 
                 # ensure y-lim stays the same
                 self.ax_ts.set_ylim(y1, y2)
