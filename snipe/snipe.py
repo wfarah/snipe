@@ -25,6 +25,8 @@ import matplotlib as mpl
 mpl.rcParams['keymap.save'].remove('s')
 mpl.rcParams['keymap.back'].remove('c')
 
+TEXT_FONT_DEFAULT=8
+CONTROL_FONT_DEFAULT=10
 
 def extend_trues(arr_i, factor=10):
     """
@@ -372,8 +374,25 @@ class SNIPEApp(tk.Tk):
         dpi_scaling = self.winfo_fpixels('1i') / 72
 
         base_normal, base_text = 16, 10
-        normal_size = max(10, int(base_normal * dpi_scaling))
-        text_size   = max(8, int(base_text * dpi_scaling))
+
+        if "text_font" in kwargs:
+            if kwargs['text_font']:
+                text_font_max = kwargs['text_font']
+            else:
+                text_font_max = TEXT_FONT_DEFAULT
+        else:
+            text_font_max = TEXT_FONT_DEFAULT
+
+        if "control_font" in kwargs:
+            if kwargs["control_font"]:
+                normal_font_max = kwargs["control_font"]
+            else:
+                normal_font_max = CONTROL_FONT_DEFAULT
+        else:
+            normal_font_max = CONTROL_FONT_DEFAULT
+
+        normal_size = max(normal_font_max, int(base_normal * dpi_scaling))
+        text_size   = max(text_font_max, int(base_text * dpi_scaling))
 
         global NORMAL_FONT
         global NOBOLD_FONT
@@ -835,7 +854,26 @@ class SNIPEApp(tk.Tk):
 
 
 def main():
-    app = SNIPEApp()
+    parser = argparse.ArgumentParser(
+            description=\
+            "SNIPE -- Signal-to-noise Investigation of Pulsed events")
+
+    parser.add_argument('--text_font', dest='text_font', type=int,
+            help="change figure text font size [default: %i]"\
+                    %TEXT_FONT_DEFAULT,
+            default=TEXT_FONT_DEFAULT,
+            required=False)
+
+    parser.add_argument('--control_font', dest='control_font', type=int,
+            help="change control panel font size [default: %i]"\
+                    %CONTROL_FONT_DEFAULT,
+            default=CONTROL_FONT_DEFAULT,
+            required=False)
+
+    args = parser.parse_args()
+
+    app = SNIPEApp(text_font=args.text_font,
+                   control_font=args.control_font)
     app.mainloop()
 
 # Run the application
