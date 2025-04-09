@@ -286,7 +286,7 @@ class ControlFrame(tk.Frame):
             self.root.tsamp_orig = self.root.tsamp
 
             if self.root.preproc.get():
-                self.root.wfall = block / np.mean(block, axis=1)[:, np.newaxis]
+                self.root.wfall = block / np.nanmean(block, axis=1)[:, np.newaxis]
             else:
                 self.root.wfall = block
             self.root.orig_wfall = self.root.wfall.copy()
@@ -330,7 +330,7 @@ class ControlFrame(tk.Frame):
         # reshape before summing
         tmp_reshape = tmp.reshape(tmp.shape[0]//2, 
                                   -1, tmp.shape[1])
-        self.root.wfall = tmp_reshape.sum(axis=1)
+        self.root.wfall = np.nansum(tmp_reshape, axis=1)
         self.root.chan_freqs = tmp_chan_freqs.reshape(
                 tmp_chan_freqs.shape[0]//2, -1).mean(axis=1)
         self.root.foff *= 2
@@ -348,7 +348,7 @@ class ControlFrame(tk.Frame):
 
         tmp_reshape = tmp.reshape(tmp.shape[0], 
                                   tmp.shape[1]//2, -1)
-        self.root.wfall = tmp_reshape.sum(axis=2)
+        self.root.wfall = np.nansum(tmp_reshape, axis=2)
         self.root.time_vals = tmp_time_vals.reshape(
                 tmp_time_vals.shape[0]//2, -1).mean(axis=1)
         self.root.tsamp *= 2
@@ -537,7 +537,7 @@ class SNIPEApp(tk.Tk):
 
         # get normalized timeseries
         # normalize can be edited if another normalization scheme is needed
-        self.ts = normalize(np.sum(self.wfall, axis=0))
+        self.ts = normalize(np.nansum(self.wfall, axis=0))
 
         # Plot timeseries
         self.ax_ts.plot(self.time_vals, self.ts, linestyle="-")
